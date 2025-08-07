@@ -28,7 +28,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
     }
 
     h1 {
@@ -51,6 +51,21 @@
       width: 100%;
       height: 315px;
       border: none;
+    }
+
+    .link-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .link-section a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .link-section a:hover {
+      text-decoration: underline;
     }
 
     @media (max-width: 768px) {
@@ -77,8 +92,14 @@
   </div>
 
   <div class="right">
-    <h2>本日のBGM</h2>
-    <iframe id="bgmFrame" src="" allowfullscreen></iframe>
+    <div>
+      <h2>本日のBGM</h2>
+      <iframe id="bgmFrame" src="" allowfullscreen></iframe>
+    </div>
+    
+    <div class="link-section">
+      <p><a href="https://t.co/odkAElYRM3" target="_blank">▶ 装備管理サイトはこちら</a></p>
+    </div>
   </div>
 
   <script>
@@ -182,13 +203,13 @@
       const bgmFrame = document.getElementById('bgmFrame');
       const day = new Date().getDay(); // 0:日曜, 1:月曜, ..., 6:土曜
       const bgmUrls = {
-        0: "https://t.co/nvEyv9zTj4", // 日曜
-        1: "https://t.co/DDxKvIpZIy", // 月曜
-        2: "https://t.co/eU5pjwSaV2", // 火曜
-        3: "https://t.co/LAObnxxILq", // 水曜
-        4: "https://t.co/Arjn3ShhUR", // 木曜
-        5: "https://t.co/otZm9Aa8zL", // 金曜
-        6: "https://t.co/ZZ9sGpBX17"  // 土曜
+        0: "https://t.co/nvEyv9Ar8C", // 日曜
+        1: "https://t.co/DDxKvIqxy6", // 月曜
+        2: "https://t.co/eU5pjwSIKA", // 火曜
+        3: "https://t.co/LAObnxygAY", // 水曜
+        4: "https://t.co/Arjn3ShPKp", // 木曜
+        5: "https://t.co/otZm9AaGpj", // 金曜
+        6: "https://t.co/ZZ9sGpCuQF"  // 土曜
       };
 
       bgmFrame.src = bgmUrls[day] || "";
