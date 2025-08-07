@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ドラクエ10 日課チェックリスト</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+
+    .left {
+      flex: 2;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f5f5f5;
+    }
+
+    .right {
+      flex: 1;
+      padding: 10px;
+      background-color: #fff;
+      border-left: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    h2 {
+      margin-top: 30px;
+    }
+
+    .task {
+      margin-left: 20px;
+    }
+
+    button {
+      margin: 5px 0;
+    }
+
+    iframe {
+      width: 100%;
+      height: 315px;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .left, .right {
+        flex: 1;
+        width: 100%;
+      }
+
+      iframe {
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <h1>ドラクエ10 日課チェックリスト</h1>
+    <p>※ チェック状態は毎朝6時に自動リセットされます。</p>
+    <div id="container"></div>
+  </div>
+
+  <div class="right">
+    <h2>本日のBGM</h2>
+    <iframe id="bgmFrame" src="" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    const characters = ['キャラ1', 'キャラ2', 'キャラ3', 'キャラ4'];
+    const tasks = [
+      '冥骸魔レギルラッゾ＆獣魔ローガスト',
+      '紅殻魔スコルパイド',
+      '翠将鬼ジェルザーク',
+      '深淵の咎人たち',
+      '日替わり討伐',
+      'DQXツールログイン',
+      '福引2回無料（DQXツール）',
+      '牧場の肉回収（DQXツール）',
+      '魚釣り（DQXツール）'
+    ];
+
+    const container = document.getElementById('container');
+
+    function getStorageKey(character, task) {
+      return `task_${character}_${task}`;
+    }
+
+    function getLastResetKey() {
+      return 'lastReset';
+    }
+
+    function saveTaskStatus(character, task, checked) {
+      localStorage.setItem(getStorageKey(character, task), checked ? '1' : '0');
+    }
+
+    function loadTaskStatus(character, task) {
+      return localStorage.getItem(getStorageKey(character, task)) === '1';
+    }
+
+    function resetAllTasks() {
+      characters.forEach(character => {
+        tasks.forEach(task => {
+          localStorage.setItem(getStorageKey(character, task), '0');
+        });
+      });
+      localStorage.setItem(getLastResetKey(), new Date().toISOString());
+      render();
+    }
+
+    function checkAutoReset() {
+      const lastReset = localStorage.getItem(getLastResetKey());
+      const now = new Date();
+      const today6am = new Date();
+      today6am.setHours(6, 0, 0, 0);
+
+      if (!lastReset || new Date(lastReset) < today6am && now >= today6am) {
+        resetAllTasks();
+      }
+    }
+
+    function render() {
+      container.innerHTML = '';
+
+      characters.forEach(character => {
+        const charDiv = document.createElement('div');
+        charDiv.innerHTML = `<h2>${character}</h2>`;
+
+        tasks.forEach(task => {
+          const label = document.createElement('label');
+          label.className = 'task';
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = loadTaskStatus(character, task);
+          checkbox.addEventListener('change', () => {
+            saveTaskStatus(character, task, checkbox.checked);
+          });
+
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(' ' + task));
+          charDiv.appendChild(label);
+          charDiv.appendChild(document.createElement('br'));
+        });
+
+        const clearBtn = document.createElement('button');
+        clearBtn.textContent = `「${character}」をリセット`;
+        clearBtn.addEventListener('click', () => {
+          tasks.forEach(task => {
+            saveTaskStatus(character, task, false);
+          });
+          render();
+        });
+
+        charDiv.appendChild(clearBtn);
+        container.appendChild(charDiv);
+      });
+
+      const allClearBtn = document.createElement('button');
+      allClearBtn.textContent = '全キャラすべてリセット';
+      allClearBtn.addEventListener('click', resetAllTasks);
+      container.appendChild(document.createElement('hr'));
+      container.appendChild(allClearBtn);
+    }
+
+    function setBgmByDay() {
+      const bgmFrame = document.getElementById('bgmFrame');
+      const day = new Date().getDay(); // 0:日曜, 1:月曜, ..., 6:土曜
+      const bgmUrls = {
+        0: "https://t.co/nvEyv9zTj4", // 日曜
+        1: "https://t.co/DDxKvIpZIy", // 月曜
+        2: "https://t.co/eU5pjwSaV2", // 火曜
+        3: "https://t.co/LAObnxxILq", // 水曜
+        4: "https://t.co/Arjn3ShhUR", // 木曜
+        5: "https://t.co/otZm9Aa8zL", // 金曜
+        6: "https://t.co/ZZ9sGpBX17"  // 土曜
+      };
+
+      bgmFrame.src = bgmUrls[day] || "";
+    }
+
+    checkAutoReset();
+    render();
+    setBgmByDay();
+  </script>
+</body>
+</html>
